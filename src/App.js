@@ -39,3 +39,29 @@ const App = (props) =>  {
 // each component rendered through a Route match will automatically receive history, match, and location props
 // so it might be rare that you would actually need withRouter() in your code -- often changes to the url will happen from within components that already have the router props (history, match, location) -- but I needed it for this example because App is not rendered as a result of matching a Route and therefore doesn't automatically receive those props...
 export default withRouter(App);
+
+// Now you might be thinking, "How in the world would I do this if I'm using Redux/?? -- I don't have access to history from my action creator files!"
+// True enough, but remember history is just an object, and unlike most props, it is mutable... which means you can just pass it along as an argument to an action creator!
+// below is some pseudocode around that situation...
+// Imagine an addPlayer action creator that's async, and if the player is successfully created we want to route to that new player's show page...
+// from here, or any component that uses this action creator:
+// `props.addPlayer(player, props.history)`
+// and in the corresponding action creator:
+// const addPlayer = (player, history) => {
+//   return dispatch => {
+//     return fetch(url + options & headers)
+//      .then(r=>r.json())
+//      .then(resp => {
+//        if (failure) {
+//          (handle failure)
+//          (show error message and allow new form subit, perhaps)
+//        } else {
+//          (success )
+//          dispatch((action to update state with the resp))
+//          and here's the point, finally:
+//          history.push("/players/${resp.player.id}")
+//          (I didn't yet build this route ^^ in this example, as we didn't get to dynamic routing... next time!)
+//        }
+//    })
+//  }
+//}
