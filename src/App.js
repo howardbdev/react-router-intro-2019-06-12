@@ -2,8 +2,6 @@ import React from 'react';
 import './App.css';
 import About from './components/About.js'
 import Players from './components/Players.js'
-import PlayerCard from './components/PlayerCard.js'
-import NewPlayerForm from './components/NewPlayerForm.js'
 import Teams from './components/Teams.js'
 import Home from './components/Home.js'
 import { Switch, Route,NavLink, withRouter } from 'react-router-dom'
@@ -57,14 +55,7 @@ class App extends React.Component {
           <NavLink exact activeClassName="current" to="/Home">Home</NavLink>
         </div>
         <Switch>
-          <Route exact path="/players" render={props => <Players players={this.state.players} {...props}/>} />
-          <Route exact path="/players/new" component={props => <NewPlayerForm {...props} handleSubmit={this.handleNewPlayerFormSubmit}/>}/>
-          <Route exact path="/players/:jersey_number" render={props => {
-                const player = this.state.players.find(p => p.jersey_number === props.match.params.jersey_number)
-                return <PlayerCard player={player ? player : {}} {...props}/>
-              }
-            }
-          />
+          <Route path="/players" render={props => <Players handleSubmit={this.handleNewPlayerFormSubmit} players={this.state.players} {...props}/>} />
           <Route exact path="/teams" component={Teams} />
           <Route exact path="/about" component={About} />
           <Route exact path="/home" component={Home} />

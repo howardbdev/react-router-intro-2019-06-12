@@ -36,3 +36,12 @@
   text-decoration: none;
   color: red;
 }
+
+.Players {
+  display: flex;
+  flex-direction: row;
+}
+
+a {
+  font-size: 12px;
+}
