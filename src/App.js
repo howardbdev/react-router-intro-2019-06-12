@@ -1,13 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import Players from './components/Players.js'
+import PlayerCard from './components/PlayerCard'
 import Teams from './components/Teams.js'
 import Home from './components/Home.js'
 import { Switch, Route, Link, NavLink, withRouter } from 'react-router-dom'
 
+
+
 // I changed back to just props so that you can throw in a debugger and see what withRouter gives you... you can see the same thing by looking at the Players or Teams component in the React dev tools
 const App = (props) =>  {
+  const [players, setPlayers] = useState(playersArray)
 
   const handleClick = () => {
     if (props.location.pathname === "/teams") {
@@ -25,7 +29,13 @@ const App = (props) =>  {
         <NavLink to="/teams">Teams</NavLink>
       </div>
       <Switch>
-        <Route exact path="/players" component={Players} />
+        <Route exact path="/players" render={(props) => <Players {...props} players={players}/>} />
+        <Route exact path="/players/:jerseyNumber"
+          render={(props)=>
+            <PlayerCard {...props}
+              player={players.find(p => p.jerseyNumber === props.match.params.jerseyNumber)}
+            />
+        }/>
         <Route exact path="/teams" component={Teams} />
         <Route component={Home} />
       </Switch>
@@ -34,11 +44,12 @@ const App = (props) =>  {
   );
 }
 
+export default withRouter(App);
+
 // a comment as I'm not sure I mentioned this during lecture but it's important:
 // note on withRouter(): you may not need to use it!
 // each component rendered through a Route match will automatically receive history, match, and location props
 // so it might be rare that you would actually need withRouter() in your code -- often changes to the url will happen from within components that already have the router props (history, match, location) -- but I needed it for this example because App is not rendered as a result of matching a Route and therefore doesn't automatically receive those props...
-export default withRouter(App);
 
 // Now you might be thinking, "How in the world would I do this if I'm using Redux/?? -- I don't have access to history from my action creator files!"
 // True enough, but remember history is just an object, and unlike most props, it is mutable... which means you can just pass it along as an argument to an action creator!
