@@ -1,10 +1,12 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import About from './components/About.js'
 import Players from './components/Players.js'
+import PlayerCard from './components/PlayerCard.js'
+import NewPlayerForm from './components/NewPlayerForm.js'
 import Teams from './components/Teams.js'
 import Home from './components/Home.js'
-import { Switch, Route, Link, NavLink, withRouter } from 'react-router-dom'
+import { Switch, Route,NavLink, withRouter } from 'react-router-dom'
 import api from './utilities/api.js'
 
 // I changed back to just props so that you can throw in a debugger and see what withRouter gives you... you can see the same thing by looking at the Players or Teams component in the React dev tools
@@ -29,19 +31,50 @@ class App extends React.Component {
     }
   }
 
+  handleNewPlayerFormSubmit = (event, formData) => {
+    event.preventDefault()
+    const { history } = this.props
+    const player = {
+      player: formData
+    }
+    api.post('/players', player)
+      .then(newPlayer => {
+        this.setState({
+          players: this.state.players.concat(newPlayer)
+        })
+        history.push(`/players/${newPlayer.jersey_number}`)
+      })
+  }
+
   render () {
     return (
       <div className="App">
         <div>
-          <NavLink to="/players">Players | </NavLink>
-          <NavLink to="/teams">Teams</NavLink>
+          <NavLink exact activeClassName="current" to="/players">Players | </NavLink>
+          <NavLink exact activeClassName="current" to="/players/new">New Player | </NavLink>
+          <NavLink exact activeClassName="current" to="/teams">Teams | </NavLink>
+          <NavLink exact activeClassName="current" to="/About">About | </NavLink>
+          <NavLink exact activeClassName="current" to="/Home">Home</NavLink>
         </div>
         <Switch>
-          <Route exact path="/players" component={props=> <Players players={this.state.players} {...props}/>} />
+          <Route exact path="/players" render={props => <Players players={this.state.players} {...props}/>} />
+          <Route exact path="/players/new" component={props => <NewPlayerForm {...props} handleSubmit={this.handleNewPlayerFormSubmit}/>}/>
+          <Route exact path="/players/:jersey_number" render={props => {
+                const player = this.state.players.find(p => p.jersey_number === props.match.params.jersey_number)
+                return <PlayerCard player={player ? player : {}} {...props}/>
+              }
+            }
+          />
           <Route exact path="/teams" component={Teams} />
-          <Route component={Home} />
+          <Route exact path="/about" component={About} />
+          <Route exact path="/home" component={Home} />
+          <Route component={ Home } />
         </Switch>
+        <br/>
+        <br/>
+        <br/>
         <button onClick={this.handleClick}>Team and Players toggle!</button>
+        <p>The above button ^^^ just demos what `withRouter()` and `history.push()` can do</p>
       </div>
     );
   }
