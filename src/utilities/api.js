@@ -18,7 +18,8 @@ export default class API {
     const { headers } = this
     return fetch(`${this.BASE_URL}${url}`, {
       ...this.postOptions,
-      headers
+      headers,
+      body: JSON.stringify(data)
     })
       .then(resp => resp.json())
   }
