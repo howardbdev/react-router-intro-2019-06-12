@@ -5,33 +5,46 @@ import Players from './components/Players.js'
 import Teams from './components/Teams.js'
 import Home from './components/Home.js'
 import { Switch, Route, Link, NavLink, withRouter } from 'react-router-dom'
+import api from './utilities/api.js'
 
 // I changed back to just props so that you can throw in a debugger and see what withRouter gives you... you can see the same thing by looking at the Players or Teams component in the React dev tools
-const App = (props) =>  {
+class App extends React.Component {
+  state = {
+    players: []
+  }
 
-  const handleClick = () => {
-    if (props.location.pathname === "/teams") {
-      // note that the history received through Router or withRouter is unique amongst props -- it is mutable!!!
-      props.history.push("/players")
+  componentDidMount() {
+    api.get('/players')
+      .then(players => this.setState({
+        players
+      }))
+  }
+
+  handleClick = () => {
+    if (this.props.location.pathname === "/teams") {
+      // note that the history prop received through Router or withRouter is unique amongst props -- it is mutable!!!
+      this.props.history.push("/players")
     } else {
-      props.history.push("/teams")
+      this.props.history.push("/teams")
     }
   }
 
-  return (
-    <div className="App">
-      <div>
-        <NavLink to="/players">Players | </NavLink>
-        <NavLink to="/teams">Teams</NavLink>
+  render () {
+    return (
+      <div className="App">
+        <div>
+          <NavLink to="/players">Players | </NavLink>
+          <NavLink to="/teams">Teams</NavLink>
+        </div>
+        <Switch>
+          <Route exact path="/players" component={props=> <Players players={this.state.players} {...props}/>} />
+          <Route exact path="/teams" component={Teams} />
+          <Route component={Home} />
+        </Switch>
+        <button onClick={this.handleClick}>Team and Players toggle!</button>
       </div>
-      <Switch>
-        <Route exact path="/players" component={Players} />
-        <Route exact path="/teams" component={Teams} />
-        <Route component={Home} />
-      </Switch>
-      <button onClick={handleClick}>Team and Players toggle!</button>
-    </div>
-  );
+    );
+  }
 }
 
 // a comment as I'm not sure I mentioned this during lecture but it's important:
