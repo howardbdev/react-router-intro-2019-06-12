@@ -1,4 +1,4 @@
-export default class API {
+export default class {
   static BASE_URL = "http://localhost:3001"
 
   static postOptions = {
