@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import Players from './components/Players.js'
-import PlayerCard from './components/PlayerCard'
 import Teams from './components/Teams.js'
 import Home from './components/Home.js'
 import { Switch, Route, Link, NavLink, withRouter } from 'react-router-dom'
@@ -18,9 +17,16 @@ class App extends React.Component {
 
   componentDidMount() {
     api.get('/players')
-      .then(players => this.setState({
-        players
-      }))
+    .then(players => this.setState({
+      players
+    }))
+    
+    // fetch(`/players`)
+    //   .then(resp => resp.json())
+    //   .then(players => this.setState({
+    //     players
+    //   }))
+
   }
 
   handleClick = () => {
@@ -32,15 +38,55 @@ class App extends React.Component {
     }
   }
 
+  handleNewPlayerSubmit = (event, formData) => {
+    event.preventDefault()
+    const playerObj = {
+      player: formData
+    }
+    api.post('/players', playerObj)
+      .then(newPlayer => {
+        this.props.history.push(`/players/${newPlayer.jersey_number}`)
+        this.setState({
+          players: this.state.players.concat(newPlayer)
+        })
+      })
+
+    // fetch('/players', {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json"
+    //   },
+    //   body: JSON.stringify(playerObj)
+    // })
+    //   .then(r => r.json())
+    //   .then(newPlayer => {
+    //     // what needs to happen ????
+    //     this.props.history.push(`/players/${newPlayer.jersey_number}`)
+    //     this.setState({
+    //       players: this.state.players.concat(newPlayer)
+    //     })
+    //   })
+  }
+
   render () {
     return (
       <div className="App">
         <div>
-          <NavLink to="/players">Players | </NavLink>
-          <NavLink to="/teams">Teams</NavLink>
+          <NavLink exact to="/players">Players | </NavLink>
+          <NavLink exact to="/players/new">New Player | </NavLink>
+          <NavLink exact to="/teams">Teams</NavLink>
         </div>
         <Switch>
-          <Route exact path="/players" render={props => <Players players={this.state.players} {...props}/>} />
+          <Route
+            path="/players"
+            render={props =>
+              <Players
+                players={this.state.players}
+                handleSubmit={this.handleNewPlayerSubmit}
+                {...props}
+            />}
+          />
+
           <Route exact path="/teams" component={Teams} />
           <Route component={Home} />
         </Switch>
