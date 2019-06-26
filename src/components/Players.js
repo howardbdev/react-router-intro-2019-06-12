@@ -7,7 +7,7 @@ import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
 
 const Players = ({players, handleSubmit}) => {
   return (
-    <div class="Players">
+    <div className="Players">
       <div>
         {players.map(p => <><NavLink key={p.jersey_number} to={`/players/${p.jersey_number}`}>{p.name}</NavLink><br/></>)}
       </div>
