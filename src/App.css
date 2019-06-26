@@ -31,3 +31,16 @@
     transform: rotate(360deg);
   }
 }
+
+.active {
+  color: green;
+}
+
+.Players {
+  display: flex;
+  flex-direction: row;
+}
+
+a {
+  font-size: 10px;
+}
